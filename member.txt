@@ -1,0 +1,10 @@
+MEMBER : aut | TABLE : 1
+MEMBER : aut | TABLE : 1
+MEMBER : aut | TABLE : 1
+MEMBER : 222 | TABLE : 1
+MEMBER : gg | TABLE : 1
+MEMBER : yy | TABLE : 12
+MEMBER : 345 | TABLE : 23
+MEMBER : aut | TABLE : 1
+MEMBER : aut | TABLE : 1
+MEMBER : rrr | TABLE : 22

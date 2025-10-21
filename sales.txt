@@ -1,0 +1,12 @@
+=== TABLE 1 | MEMBER: aut | DATE: 2025-10-22 00:43:24 ===
+Total Price: 0 Baht
+-----------------------------
+=== TABLE 1 | MEMBER: 222 | DATE: 2025-10-22 00:43:51 ===
+Total Price: 0 Baht
+-----------------------------
+=== TABLE 1 | MEMBER: aut | DATE: 2025-10-22 00:53:52 ===
+- Shrimp Fried Rice x 2 = 120 Baht
+- Iced Tea x 2 = 50 Baht
+- Cookie x 2 = 40 Baht
+Total Price: 210 Baht
+-----------------------------
