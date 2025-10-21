@@ -1,6 +1,8 @@
 import datetime
 
-# ------------------ ฟังก์ชันลงทะเบียนสมาชิก ------------------
+# ----------------------------- #
+# ลงทะเบียนสมาชิก
+# ----------------------------- #
 def register_member():
     name = input("Enter member name : ")
     table = input("Enter table number : ")
@@ -12,7 +14,9 @@ def register_member():
     return name, table
 
 
-# ------------------ ฟังก์ชันลบสมาชิก ------------------
+# ----------------------------- #
+# ลบสมาชิก
+# ----------------------------- #
 def delete_member():
     while True:
         name_to_delete = input("Enter member name to delete (Enter to exit) : ")
@@ -29,7 +33,6 @@ def delete_member():
 
             for line in lines:
                 line = line.strip()
-
                 if line.startswith("MEMBER : "):
                     try:
                         member_part = line.split("|")[0].strip()
@@ -40,7 +43,6 @@ def delete_member():
                             continue
                     except Exception:
                         pass
-
                 new_lines.append(line + "\n")
 
             if not found:
@@ -58,7 +60,9 @@ def delete_member():
             break
 
 
-# ------------------ ฟังก์ชันอ่านเมนูจากไฟล์ ------------------
+# ----------------------------- #
+# อ่านเมนูจากไฟล์
+# ----------------------------- #
 def read_menu_from_file(filename):
     menus = {}
     category = None
@@ -91,19 +95,25 @@ def read_menu_from_file(filename):
     return menus
 
 
-# ------------------ แสดงเมนูแต่ละหมวด ------------------
+# ----------------------------- #
+# แสดงเมนูตามหมวดหมู่
+# ----------------------------- #
 def show_menu_by_category(category, menu_items):
     print(f"\n=== {category} ===")
+    print(f"{'No.':<5}{'รายการ':<25}{'ราคา (บาท)':>15}")
+    print("-" * 45)
     for item in menu_items:
-        print(f"{item['no']}. {item['name']} ราคา {item['price']} บาท")
+        print(f"{item['no']:<5}{item['name']:<25}{item['price']:>15,.2f}")
+    print("-" * 45)
 
 
-# ------------------ เลือกเมนูในแต่ละหมวด ------------------
+# ----------------------------- #
+# เลือกเมนู
+# ----------------------------- #
 def select_from_category(category, menu_items):
     orders = []
     show_menu_by_category(category, menu_items)
-
-    selected = input("\nSelect a menu (1,3,5 or enter to skip): ").strip()
+    selected = input("\nSelect a menu (1,3,5 or Enter to skip): ").strip()
 
     if selected == "":
         return orders
@@ -130,61 +140,72 @@ def select_from_category(category, menu_items):
                 found = True
                 break
         if not found:
-            print(f"No menu number found. {num}")
+            print(f"No menu number found: {num}")
 
     return orders
 
 
-# ------------------ คำนวณราคารวม ------------------
+# ----------------------------- #
+# คำนวณราคารวม
+# ----------------------------- #
 def calculate_total(orders, discount=0):
     total = sum(item["price"] * item["qty"] for item in orders)
     if discount > 0:
-        total = total - (total * discount / 100)
+        total -= total * discount / 100
     return total
 
 
-# ------------------ แสดงใบเสร็จพร้อมตาราง ------------------
+# ----------------------------- #
+# แสดงใบเสร็จ (สวยงาม)
+# ----------------------------- #
 def show_receipt(all_orders, member_info, discount=0):
     name, table = member_info
     now = datetime.datetime.now()
     date_str = now.strftime("%Y-%m-%d %H:%M:%S")
 
-    print(f"\n=== TABLE {table} | MEMBER: {name} | DATE: {date_str} ===\n")
+    print("\n" + "=" * 60)
+    print(f"  TABLE {table} | MEMBER: {name} | DATE: {date_str}")
+    print("=" * 60)
+    print(f"{'รายการ':<25}{'จำนวน':>8}{'ราคา/หน่วย':>14}{'รวม':>13}")
+    print("-" * 60)
 
-    # ความกว้างของแต่ละคอลัมน์
-    col_name = 22
-    col_qty = 8
-    col_total = 11
-
-    # สร้างหัวตาราง
-    print("+" + "-" * col_name + "+" + "-" * col_qty + "+" + "-" * col_total + "+")
-    print(f"| {'Name':<{col_name-1}}| {'Qty':<{col_qty-1}}| {'Total':<{col_total-1}}|")
-    print("+" + "-" * col_name + "+" + "-" * col_qty + "+" + "-" * col_total + "+")
-
-    # แสดงรายการอาหาร
+    total_price = 0
     for order in all_orders:
-        print(f"| {order['name']:<{col_name-1}}| {order['qty']:<{col_qty-1}}| {order['total']:<{col_total-1}.2f}|")
+        total = order['price'] * order['qty']
+        total_price += total
+        print(f"{order['name']:<25}{order['qty']:>8}{order['price']:>14,.2f}{total:>13,.2f}")
 
-    # ปิดตาราง
-    print("+" + "-" * col_name + "+" + "-" * col_qty + "+" + "-" * col_total + "+")
-
-    total_price = calculate_total(all_orders, discount)
+    print("-" * 60)
 
     if discount > 0:
-        print(f"Discount: {discount}%")
-    print(f"Total: {total_price:.2f} Baht\n")
+        discount_amount = total_price * discount / 100
+        total_price -= discount_amount
+        print(f"{'ส่วนลด':<25}{'':>8}{'-':>14}{discount_amount:>13,.2f}")
 
-    # เขียนลงไฟล์ sales.txt
+    print(f"{'รวมทั้งหมด':<25}{'':>8}{'':>14}{total_price:>13,.2f}")
+    print("=" * 60)
+    print("💰 ขอบคุณที่ใช้บริการครับ 💰\n")
+
+    # เขียนลงไฟล์
     with open("sales.txt", "a", encoding="utf-8") as f:
         f.write(f"=== TABLE {table} | MEMBER: {name} | DATE: {date_str} ===\n")
+        f.write(f"{'รายการ':<25}{'จำนวน':>8}{'ราคา/หน่วย':>14}{'รวม':>13}\n")
+        f.write("-" * 60 + "\n")
+
         for order in all_orders:
-            f.write(f"- {order['name']} x {order['qty']} = {order['total']} Baht\n")
+            total = order['price'] * order['qty']
+            f.write(f"{order['name']:<25}{order['qty']:>8}{order['price']:>14,.2f}{total:>13,.2f}\n")
+
         if discount > 0:
-            f.write(f"Discount: {discount}%\n")
-        f.write(f"Total Price: {total_price} Baht\n")
+            f.write(f"{'ส่วนลด':<25}{'':>8}{'-':>14}{discount_amount:>13,.2f}\n")
+
+        f.write(f"{'รวมทั้งหมด':<25}{'':>8}{'':>14}{total_price:>13,.2f}\n")
+        f.write("=" * 60 + "\n\n")
 
 
-# ------------------ สรุปยอดขายตามสมาชิก ------------------
+# ----------------------------- #
+# รายงานยอดขายตามสมาชิก (สวย)
+# ----------------------------- #
 def report_sales_by_member():
     try:
         with open("sales.txt", "r", encoding="utf-8") as f:
@@ -195,20 +216,13 @@ def report_sales_by_member():
 
         for line in lines:
             line = line.strip()
-
             if line.startswith("=== TABLE"):
                 parts = line.split("|")
                 for p in parts:
                     if "MEMBER:" in p:
                         current_member = p.split(":")[1].strip()
                         if current_member not in sales_data:
-                            sales_data[current_member] = {
-                                "food": 0.0,
-                                "snack": 0.0,
-                                "drink": 0.0,
-                                "total": 0.0
-                            }
-
+                            sales_data[current_member] = {"food": 0.0, "snack": 0.0, "drink": 0.0, "total": 0.0}
             elif line.startswith("- "):
                 item_part = line.split("=")
                 name = item_part[0].split("x")[0].replace("-", "").strip()
@@ -220,37 +234,54 @@ def report_sales_by_member():
                     sales_data[current_member]["snack"] += price
                 else:
                     sales_data[current_member]["food"] += price
-
             elif line.startswith("Total Price:"):
                 total = float(line.replace("Total Price:", "").replace("Baht", "").strip())
                 sales_data[current_member]["total"] += total
 
-        print("\n=== สรุปยอดขายตามสมาชิก ===\n")
+        # === กำหนดความกว้างคอลัมน์แบบ Excel ===
+        max_name_len = max(len(name) for name in sales_data.keys())
+        name_col_width = max(10, max_name_len + 2)
+        num_col_width = 12
+
+        # === สร้าง header ===
+        header = f"| {'สมาชิก':<{name_col_width}}  | {'อาหาร':>{num_col_width}} | {'ของว่าง':>{num_col_width}}  | {'เครื่องดื่ม':>{num_col_width}}     | {'รวม':>{num_col_width}} |"
+        separator = f"|{'-'*(name_col_width+2)}|{'-'*(num_col_width+2)}|{'-'*(num_col_width+2)}|{'-'*(num_col_width+2)}|{'-'*(num_col_width+2)}|"
+
+        print(header)
+        print(separator)
+
+        # === แสดงข้อมูลสมาชิก ===
         for member, data in sales_data.items():
-            print(f"Member : {member}")
-            print(f"  - Total food sales : {data['food']} บาท")
-            print(f"  - Total drink sales : {data['drink']} บาท")
-            print(f"  - Total snack sales : {data['snack']} บาท")
-            print(f"  - Total Price : {data['total']} บาท\n")
+            print(f"| {member:<{name_col_width}} | {data['food']:>{num_col_width},.2f} | {data['snack']:>{num_col_width},.2f} | {data['drink']:>{num_col_width},.2f} | {data['total']:>{num_col_width},.2f} |")
+
+        # === สรุปยอดรวม ===
+        total_food = sum(d["food"] for d in sales_data.values())
+        total_snack = sum(d["snack"] for d in sales_data.values())
+        total_drink = sum(d["drink"] for d in sales_data.values())
+        total_all = sum(d["total"] for d in sales_data.values())
+
+        print(separator)
+        print(f"| {'รวมทั้งหมด':<{name_col_width}}   | {total_food:>{num_col_width},.2f} | {total_snack:>{num_col_width},.2f} | {total_drink:>{num_col_width},.2f} | {total_all:>{num_col_width},.2f} |")
+        print(separator)
 
     except FileNotFoundError:
-        print("The sales.txt file was not found.")
+        print(" ไม่พบไฟล์ sales.txt")
 
 
-# ------------------ รายงานยอดขายรายวัน ------------------
+# ----------------------------- #
+# รายงานยอดขายรายวัน (สวย)
+# ----------------------------- #
 def daily_sales_report():
     while True:
-        date_input = input("Enter the date to view sales (YYYYMMDD) or press Enter to exit : ").strip()
+        date_input = input("Enter the date (YYYYMMDD) or Enter to exit : ").strip()
 
         if date_input == "":
             return
-        
         if len(date_input) != 8 or not date_input.isdigit():
             print("Invalid date format. Please enter in YYYYMMDD format.")
             continue
-        
-        formatted_date = f"{date_input[:4]}-{date_input[4:6]}-{date_input[6:]}"
 
+        formatted_date = f"{date_input[:4]}-{date_input[4:6]}-{date_input[6:]}"
         total_sales = 0
         current_block_date = None
 
@@ -261,15 +292,17 @@ def daily_sales_report():
                     if "DATE:" in line:
                         date_part = line.split("DATE:")[1].strip().split()[0]
                         current_block_date = date_part
-                    
                     if "Total Price:" in line and current_block_date == formatted_date:
                         price = float(line.replace("Total Price:", "").replace("Baht", "").strip())
                         total_sales += price
+
         except FileNotFoundError:
-            print("No sales data found.")
+            print(" No sales data found.")
             return
         else:
-            print("\n=== DAILY SALES REPORT ===")
+            print("\n" + "=" * 50)
+            print(f" DAILY SALES REPORT")
             print(f"Date: {formatted_date}")
-            print(f"Total Sales: {total_sales:.2f} Baht\n")
+            print(f"Total Sales: {total_sales:,.2f} Baht")
+            print("=" * 50)
             break
